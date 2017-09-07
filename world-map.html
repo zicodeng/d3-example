@@ -41,7 +41,10 @@
         // mapGroup groups up countries and cities.
         var mapGroup = svgCanvas.append("g");
 
-        // A queue evaluates zero or more deferred asynchronous tasks with configurable concurrency: you control how many tasks run at the same time. When all the tasks complete, or an error occurs, the queue passes the results to your await callback.
+        // A queue evaluates zero or more deferred asynchronous tasks with configurable concurrency: 
+        // you control how many tasks run at the same time. 
+        // When all the tasks complete, or an error occurs, 
+        // the queue passes the results to your await callback.
         d3.queue()
             // Data source: https://unpkg.com/world-atlas@1/world/110m.json
             // The data source provides two different scales of data:
@@ -54,7 +57,9 @@
         // topology represents the map data.
         function createMap(error, topology) {
 
-            // The projection is the way that the geographic coordinate system is adjusted for display on our flat screen. The screen is after all a two dimensional space and we are trying to present a three dimensional object.
+            // The projection is the way that the geographic coordinate system 
+            // is adjusted for display on our flat screen. 
+            // The screen is after all a two dimensional space and we are trying to present a three dimensional object.
             var mapProjection = d3.geoMercator()
                 .scale(120) // Smaller scale value = zoom out.
                 .translate([width / 2, height / 2]); // Center it on svg canvas.
