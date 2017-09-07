@@ -67,9 +67,8 @@
             var mapPath = d3.geoPath()
                 .projection(mapProjection);
 
-            // centered represents the state that has been centered, or
-            // we can also treat it as last clicked state.
-            // It defaults to null because we want the map started with no specific state being centered.
+            // centered represents the country that is currently centered.
+            // It defaults to null because we want the map started with no specific country being centered.
             var centered = null;
 
             // Group paths of all countries.
@@ -89,14 +88,14 @@
                 .on("mouseout", function() {
                     this.setAttribute("fill", "black"); 
                 })
-                // Clicking a state to perform zooming.
+                // Clicking a country to perform zooming.
                 .on("click", function(d) {
-                    // d represents the state that has been clicked.
+                    // d represents the country that is clicked by the user.
 
                     var x, y, k;
 
-                    // If the state has been clicked but not centered,
-                    // zoom in, and update the centered state (last clicked state).
+                    // If the country is clicked but not currently centered,
+                    // zoom in, and update the centered country (last clicked country).
                     if (centered !== d) {   
                         var centroid = mapPath.centroid(d);
                         x = centroid[0];
@@ -104,7 +103,7 @@
                         k = 4;
                         centered = d;
                     } else {
-                        // If the state has already been centered, but clicked again,
+                        // If the country is currently centered, but clicked again,
                         // zoom out.
                         x = width / 2;
                         y = height / 2;
@@ -112,7 +111,7 @@
                         centered = null;
                     }
 
-                    // Add "centered" class to the path element that represents the centered state.
+                    // Add "centered" class to the path element that represents the centered country.
                     countries.selectAll("path")
                         /* 
                             classed method
