@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Pie Chart | D3 Example</title>
+</head>
+<body>
+    <div id="container"></div>
+    
+    <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
+    <script type="text/javascript">
+        d3.json("./data/suicide-squad.json", function(data) {
+            var nameInfo = 1
+                rankInfo = 2;
+
+            // Define a range of colors for our pie chart.
+            var colors = d3.scaleOrdinal()
+                .range(["red", "green", "blue", "yellow", "orange", "purple", "indigo", "skyblue"]);
+
+            var svgCanvas = d3.select("#container")
+                .append("svg")
+                .attr("width", 1000)
+                .attr("height", 800);
+
+            // Group all pie chart elements including arcs and tooltip.
+            var graphGroup = svgCanvas.append("g")
+                .attr("class", "pie-chart")
+                .attr("transform", "translate(300, 300)");
+            
+            // A function that utilizes data to decide how to slice the pie.
+            var pieFunc = d3.pie()
+                // What value will be used to determine each slice of the pie.
+                .value(function(d) {
+                    return d.rank;
+                });
+            
+            // Create arcs (pie).
+            var arcs = graphGroup.append("g")
+                .attr("class", "pie-arcs")
+                .on("mouseout", function() {
+                    tooltipGroup.style("display", "none");
+                })
+                .on("mouseover", function() {
+                    tooltipGroup.style("display", "block");
+                })
+                .on("mousemove", function() {
+                    var xPos = d3.mouse(this)[0] + 5;
+                    var yPos = d3.mouse(this)[1] - 5;
+                    tooltipGroup.attr("transform", "translate(" + xPos + ", " + yPos + ")");
+                    tooltipGroup.select("text")
+                        .text("Click a slice to switch between rank and name.");
+                });
+            
+            // Create tooltip.
+            var tooltipGroup = graphGroup.append("g")
+                .attr("class", "tooltip")
+                .style("display", "none");
+
+            tooltipGroup.append("text");
+            
+            // Create each individual arc (slice) that makes up the arcs (pie).
+            var arc = arcs.selectAll("g.slice-arc")
+                .data(pieFunc(data), function(d, i) {
+                    return d;
+                }) // Wrap data in the special pie function created above.
+                .enter()
+                    .append("g")
+                    .attr("class", "slice-arc")
+                    .attr("current-info", nameInfo) // Add a current-info attribute to indicate what info is being displayed now.
+                    .style("cursor", "pointer")
+                    .on("click", function(d, i) {
+                        // Clicking the arc will switch between corresponding rank or name info.
+                        // Note that nameInfo is a number. We need to transform it to string first then compare.
+                        if(this.getAttribute("current-info") === nameInfo + "") {
+                            this.setAttribute("current-info", rankInfo);
+                            this.childNodes[1].textContent = d.data.rank;
+                        } else {
+                            this.setAttribute("current-info", nameInfo);
+                            this.childNodes[1].textContent = d.data.name; 
+                        }
+                    });
+
+            // Define path for each individual arc (slice) that makes up the arcs (pie).
+            var arcPath = d3.arc()
+                .innerRadius(20) 
+                .outerRadius(200);
+            
+            // Add path for each individual arc (slice).
+            arc.append("path")
+                .attr("d", arcPath)
+                .attr("fill", function(d) {
+                    return colors(d.data.rank); // Apply colors for different ranks.
+                });
+            
+            // Add text for each individual arc (slice).
+            arc.append("text")
+                .attr("transform", function(d) {
+                    // Put the text in the center of the arc we draw.
+                    return "translate(" + arcPath.centroid(d) + ")";
+                })
+                .attr("text-anchor", "middle") // Center the text on its origin.
+                .text(function(d) {
+                    return d.data.name;
+                });
+        });
+    </script>
+</body>
+</html>

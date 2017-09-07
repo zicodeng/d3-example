@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Transitions | D3 Example</title>
+</head>
+<body>
+    <div id="container"></div>
+    
+    <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
+    <script type="text/javascript">
+        var svgCanvas = d3.select("#container")
+            .append("svg")
+            .attr("width", window.innerWidth)
+            .attr("height", window.innerHeight);
+
+        var rect = svgCanvas.append("rect")
+            .attr("width", 100)
+            .attr("height", 100)
+            .attr("fill", "blue");
+
+        var circle = svgCanvas.append("circle")
+            .attr("cx", 50)
+            .attr("cy", 150)
+            .attr("r", 50)
+            .attr("fill", "red");
+
+        // Add transitions.
+        rect.transition()
+            .duration(1000) // How long the animation last.
+            .delay(500)
+            .attr("width", 200)
+            .attr("transform", "translate(100, 0)") // For rects, x attribution will not work. Use transform instead.
+            // Attach event listeners.
+            .on("start", function() {
+                d3.select(this)
+                    .attr("fill", "black");
+            })
+            .on("end", function() {
+                d3.select(this)
+                    .transition()
+                    .attr("transform", "translate(300, 300)");
+            });
+
+        circle.transition()
+            .duration(500)
+            .attr("cx", 200)
+                .transition() // Chained transition.
+                .attr("r", 100)
+                .attr("cy", 200);
+
+    </script>
+</body>
+</html>

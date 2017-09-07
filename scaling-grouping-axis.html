@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Scaling, Grouping, and Axis | D3 Example</title>
+</head>
+<body>
+    <div class="graph-container"></div>
+
+    <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
+    <script type="text/javascript">
+        var margin = {
+            top: 50,
+            right: 50,
+            bottom: 50,
+            left: 50
+        };
+
+        var canvasWidth = 800;
+        var canvasHeight = 650;
+
+        var graphWidth = canvasWidth - margin.left - margin.right;
+        var graphHeight = canvasHeight - margin.top - margin.bottom;
+
+        var graphOneData = [100, 200, 400, 1000];
+        var graphTwoData = [300, 600];
+
+        // A scale is a function used to map data from an input domain to an output range.
+        // The reason why we need scaling is that the data value can be huge (may be more than 1000000),
+        // but our computer screen has a limited size.
+        // So we need to scale the data and fit that huge value into our small screen.
+        var scaling = d3.scaleLinear() // Specify which scaling function to be used here.
+            // Min and max scaling domain.
+            // Min is usually 0, max is max value in the data set.
+            .domain([0, d3.max(graphOneData.concat(graphTwoData), function(d) { // Returns the max value in the two data sets.
+                return d;
+            })])
+            .range([0, graphWidth]); // Actual visible range on screen.
+
+        // Define axis.
+        var axis = d3.axisBottom(scaling) // Available options: axisTop, axisLeft, axisBottom, axisRight
+            .ticks(10); // Number of ticks display on axis.
+
+        var svgCanvas = d3.select(".graph-container")
+            .append("svg")
+            .attr("width", canvasWidth)
+            .attr("height", canvasHeight)
+            .style("border", "1px solid black");
+
+        // Group all graph elements including bars and axis in a single g element.
+        var graphs = svgCanvas.append("g")
+            .attr("class", "graphs")
+            .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
+
+        // Group all graph one elements.
+        var graphOne = graphs.append("g") // Append a child element g to svg canvas.
+            .attr("class", "graph-one")
+            .selectAll("rect")
+            .data(graphOneData)
+            .enter()
+                .append("rect")
+                .attr("fill", "red")
+                .attr("width", function(d, i) {
+                    // Apply scaling to the rectangle's width.
+                    // The actual width will be upon our scaling function defined above.
+                    return scaling(d);
+                })
+                .attr("height", 50)
+                .attr("y", function(d, i) {
+                    return 100 * i;
+                });
+        
+        // Group all graph two elements
+        var graphTwo = graphs.append("g")
+            .attr("class", "graph-two")
+            .selectAll("rect")
+            .data(graphTwoData)
+            .enter()
+                .append("rect")
+                .attr("fill", "blue")
+                .attr("width", function(d, i) {
+                    return scaling(d);
+                })
+                .attr("height", 50)
+                .attr("y", function(d, i) {
+                    return 100 * i + 400;
+                });
+
+        // This g will group all axis elements under graphs.
+        var graphAxis = graphs.append("g")
+            .attr("transform", "translate(0" + ", " + (graphHeight + 25) + ")") // Adjust axis position.
+            .call(axis); // Calling axis.
+            
+    </script>
+</body>
+</html>

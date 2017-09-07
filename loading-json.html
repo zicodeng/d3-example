@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Loading JSON | D3 Example</title>
+</head>
+<body>
+    <div id="container"></div>
+    
+    <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
+    <script type="text/javascript">
+        // D3 json method:
+        // p1: file path
+        // p2: callback function
+        d3.json("./data/suicide-squad.json", function(data) {
+            var svgCanvas = d3.select("#container")
+                .append("svg")
+                .attr("width", 1000)
+                .attr("height", 800);
+
+            var scaling = d3.scaleLinear()
+                .domain([0, 100])
+                .range([0, 900]);
+
+            var axis = d3.axisBottom(scaling)
+                .ticks(6);
+
+            var graph = svgCanvas.append("g")
+                .attr("transform", "translate(50, 0)");
+
+            graphBars = graph.selectAll("rect")
+                .data(data);
+
+            graphBars.enter()
+                .append("rect")
+                .attr("width", function(d, i) {
+                    return scaling(d.rank);
+                })
+                .attr("height", 50)
+                .attr("y", function(d, i) {
+                    return i * (50 + 25);
+                })
+                .attr("fill", "red");
+
+            graphText = graph.selectAll("text")
+                .data(data);
+                
+            graphText.enter()
+                .append("text")
+                .attr("fill", "white")
+                .attr("y", function(d, i) {
+                    return i * (50 + 25) + 30;
+                })
+                .attr("x", 10)
+                .text(function(d) {
+                    return d.name + " rank: " + d.rank;
+                })
+
+            var graphAxis = svgCanvas.append("g")
+                .attr("transform", "translate(50, 675)")
+                .call(axis);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Enter and Exit | D3 Example</title>
+</head>
+<body>
+    <div class="container"></div>
+    
+    <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
+    <script type="text/javascript">
+        var container = d3.select(".container");
+
+        var dataSetOne = [1, 2, 3, 4, 5, 6];
+        var dataSetTwo = [11, 22, 33, 44];
+        var dataSetThree = [111, 222, 3, 4];
+        var currentDataSet = dataSetOne;
+
+        update(currentDataSet);
+
+        function update(currentDataSet) {
+
+            var p = container.selectAll("p") // data method has to work with selectAll.
+                // Data method:
+                // p1: an array.
+                // p2: key function that returns a join key for each data item passed in.
+                //     Without the key function, it will use default index (i) as its returned value.
+                //     When we perform enter and exit methods, it will only compare against index, not the actual data.
+                .data(currentDataSet, function(d, i) {
+                    return d;
+                });
+            
+            // Depending on what key function is being used,
+            // if the key function returns index (default behavior),
+            // D3 will check if our data set contains more items than there are available DOM elements, 
+            // only append the "surplus" data items by how they are ordered in the data set array (left to right).
+            // or
+            // if the key function returns the data,
+            // D3 will compare values in selected DOM elements to values in the data set,
+            // only append data items whose values are not found in the DOM elements.
+            p.enter()
+                .append("p")
+                .text(function(d, i) {
+                    return "I am number " + d;
+                })
+                .on("click", function(d, i) {
+                    // Remove the item that has been clicked from the data array.
+                    currentDataSet.splice(i, 1);
+
+                    // Call update function to render new result on page.
+                    update(currentDataSet);
+                });
+            
+            // When our data set contains less items than there are available DOM elements,
+            // remove the "surplus" DOM elements by how key function is defined.
+            // If the key function returns index (default behavior),
+            // the "surplus" DOM elements will removed by the order of bottom to up.
+            // or
+            // if the key function returns the data,
+            // remove the DOM elements whose values are not found in the updated data set array.
+            p.exit().remove();
+        }
+
+        // Append a button to body.
+        // Clicking this button will show different sets of data.
+        d3.select("body")
+            .append("button")
+            .text("Change Data")
+            .on("click", function() {
+
+                // Switch current data set.
+                if(currentDataSet === dataSetOne) {
+                    currentDataSet = dataSetTwo;
+                } else {
+                    currentDataSet = dataSetOne;
+                }
+
+                update(currentDataSet);
+            });
+
+        d3.select("body")
+            .append("button")
+            .text("Append More Data")
+            .on("click", function() {
+                var p = d3.select(".container").selectAll("p")
+                    .data(dataSetThree, function(d, i) {
+                        return d;
+                    })
+                    .enter()
+                        .append("p")
+                        .text(function(d, i) {
+                            return "New data: I am number " + d;
+                        })
+            });
+
+    </script>
+</body>
+</html>

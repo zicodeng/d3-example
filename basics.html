@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Basics | D3 Example</title>
+</head>
+<body>
+    <div>Hello World!</div>
+    
+    <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
+    <script type="text/javascript">
+        // d3 has global scope, no need to instantiate it.
+        d3.select("body") // select method selects a specified DOM node via node name, class, or id.
+            .append("p") // append method appends a child node to selected DOM node.
+            .text("D3 Example"); // text changes text of appended node.
+
+        d3.select("p")
+            .style("color", "green"); // Style adds inline style to selected element.
+    </script>
+</body>
+</html>

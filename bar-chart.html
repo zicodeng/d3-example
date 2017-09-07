@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Bar Chart | D3 Example</title>
+</head>
+<body>
+    <div id="bar-chart-container"></div>
+    
+    <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
+    <script type="text/javascript">
+        var margin = {
+            top: 20,
+            right: 60,
+            bottom: 100,
+            left: 60
+        };
+
+        // Subtracting margins from it ensures the graph elements will never go out of the canvas.
+        var width = 800 - margin.left - margin.right,
+            height = 500 - margin.top - margin.bottom;
+
+        // Define scaling methods.
+        var xScaling = d3.scaleBand()
+                .rangeRound([0, width])
+                .paddingInner(0.5) // Spacing between bars, must be in range of 0 to 1.
+                .paddingOuter(0.5); // Spacing before the first bar and the last bar.
+
+        var yScaling = d3.scaleLinear()
+                .range([height, 0])
+
+        // Define axis.
+        var xAxis = d3.axisBottom()
+            .scale(xScaling);
+
+        var yAxis = d3.axisLeft()
+            .scale(yScaling)
+            .ticks(10)
+            // Tick size can be used to create background lines.
+            .tickSizeInner(-width)
+            .tickSizeOuter(0)
+            .tickPadding(10); // Spacing bettern y-axis labels and y-axis.
+
+        var svgCanvas = d3.select("#bar-chart-container")
+            .append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom);
+
+        // Group all graph elements including bars, axises, labels, and tooltip.
+        var graphGroup = svgCanvas.append("g")
+            .attr("class", "bar-chart")
+            .attr("transform", "translate(" + margin.left + ", " + margin.top + ")");
+
+        // Import JSON data.
+        d3.json("./data/suicide-squad.json", function(data) {
+
+            // Define scaling domains.
+            xScaling.domain(data.map(function(d) {
+                return d.name;
+            }));
+
+            yScaling.domain([0, d3.max(data, function(d) { // max method returns a max value in a set of data.
+                return d.rank;
+            })]);
+
+            // Draw x-axis.
+            var xAxisGroup = graphGroup.append("g")
+                .attr("class", "x-axis")
+                .attr("transform", "translate(0, " + height + ")");
+
+            // Create x-axis labels.
+            xAxisGroup.call(xAxis)
+                .selectAll("text")
+                .style("text-anchor", "end")
+                .attr("y", 15)
+                .attr("transform", "rotate(-45)");
+
+            // Create x-axis description label.
+            xAxisGroup.append("text")
+                .attr("fill", "black")
+                .attr("y", 25)
+                .attr("x", width + 20)
+                .text("Character Name");
+            
+            // Draw y-axis.
+            var yAxisGroup = graphGroup.append("g")
+                .attr("class", "y-axis")
+                // Create y-axis labels.
+                .call(yAxis)
+                    // Create y-axis description label.
+                    .append("text")
+                    .attr("y", -40)
+                    .attr("transform", "rotate(-90)")
+                    .attr("text-anchor", "end")
+                    .attr("fill", "black")
+                    .text("Rank");
+
+
+            // Draw vertical graph bars.
+            var barGroup = graphGroup.append("g")
+                .attr("class", "graph-bars")
+                .selectAll("rect")
+                .data(data)
+                .enter()
+                    .append("rect")
+                    .style("fill", "orange")
+                    .attr("x", function(d) {
+                        return xScaling(d.name);
+                    })
+                    .attr("y", function(d) {
+                        return yScaling(d.rank);
+                    })
+                    .attr("width", xScaling.bandwidth())
+                    .attr("height", function(d) {
+                        return height - yScaling(d.rank);
+                    })
+                    // Add hover effect.
+                    .on("mouseenter", function() {
+                        this.style.fill = "green";
+                        tooltipGroup.style("display", "block");
+                    })
+                    .on("mouseout", function() {
+                        this.style.fill = "orange";
+                        tooltipGroup.style("display", "none");
+                    })
+                    .on("mousemove", function(d) {
+                        var xPos = d3.mouse(this)[0] + 5;
+                        var yPos = d3.mouse(this)[1] - 5;
+                        tooltipGroup.attr("transform", "translate(" + xPos + ", " + yPos + ")");
+                        tooltipGroup.select("text")
+                            .text(d.name + ": " + d.rank);
+                    });
+
+            // Create tooltip.
+            // It has to be created after graph bars and axis have been created,
+            // otherwise, it will be hidden underneath.
+            var tooltipGroup = graphGroup.append("g")
+                .attr("class", "tooltip")
+                .style("display", "none");
+
+            tooltipGroup.append("text");
+        });
+    </script>
+</body>
+</html>

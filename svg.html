@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>SVG | D3 Example</title>
+</head>
+<body>
+    
+    <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
+    <script type="text/javascript">
+        // canvas is not actually HTML5 Canvas object.
+        // It is just a reference to the svg container on which
+        // data will be drawn.
+        var svgCanvas = d3.select("body")
+            .append("svg")
+            .attr("width", window.innerWidth) // attr method adds an attribute to the appended/selected element.
+            .attr("height", window.innerHeight);
+
+        // Draw a rectangle on the svg canvas.
+        var rectangle = svgCanvas.append("rect")
+            .attr("x", 100)
+            .attr("y", 100)
+            .attr("width", 100)
+            .attr("height", 100);
+
+        // Draw a line on the svg canvas.
+        var line = svgCanvas.append("line")
+            .attr("x1", 200)
+            .attr("y1", 200)
+            .attr("x2", 300)
+            .attr("y2", 300)
+            .attr("stroke", "red")
+            .attr("stroke-width", 5);
+
+        // Draw circles based on an array of data.
+        var circlePositions = [300, 400, 500, 600];
+
+        var circles = svgCanvas.selectAll("circle")
+            .data(circlePositions)
+            .enter()
+                .append("circle")
+                .attr("fill", "orange")
+                .attr("cx", function(d, i) { // cx: center x
+                    // Callback function arguments:
+                    // d: each individual item (or data) in the array.
+                    // i: index of each item.
+                    return d;
+                })
+                .attr("cy", function(d, i) {
+                    return d;
+                })
+                .attr("r", 50);
+</script>
+</body>
+</html>
