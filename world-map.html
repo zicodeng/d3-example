@@ -21,8 +21,8 @@
     <div id="world-map"></div>
 
     <!-- Import D3 library. -->
-    <script type="text/javascript" src="https://d3js.org/d3.v4.min.js"></script>
-    <!-- 
+    <script type="text/javascript" src="d3.v4.js"></script>
+    <!--
         Import topojson library.
         This library provides tools for manipulating topojson and for converting back to geojson.
     -->
@@ -41,24 +41,24 @@
         // mapGroup groups up countries and cities.
         var mapGroup = svgCanvas.append("g");
 
-        // A queue evaluates zero or more deferred asynchronous tasks with configurable concurrency: 
-        // you control how many tasks run at the same time. 
-        // When all the tasks complete, or an error occurs, 
+        // A queue evaluates zero or more deferred asynchronous tasks with configurable concurrency:
+        // you control how many tasks run at the same time.
+        // When all the tasks complete, or an error occurs,
         // the queue passes the results to your await callback.
         d3.queue()
             // Data source: https://unpkg.com/world-atlas@1/world/110m.json
             // The data source provides two different scales of data:
             // 110m (1:110m small scale), or 50m (1:50m medium scale).
             // The data is in spherical coordinates, needs to be projected.
-            .defer(d3.json, "./data/world-map-topology.topojson")
+            .defer(d3.json, "data/world-map-topology.topojson")
             // .defer(d3.json, "https://unpkg.com/world-atlas@1.1.4/world/50m.json")
             .await(createMap); // Won't be executed until all deferred tasks have completed.
 
         // topology represents the map data.
         function createMap(error, topology) {
 
-            // The projection is the way that the geographic coordinate system 
-            // is adjusted for display on our flat screen. 
+            // The projection is the way that the geographic coordinate system
+            // is adjusted for display on our flat screen.
             // The screen is after all a two dimensional space and we are trying to present a three dimensional object.
             var mapProjection = d3.geoMercator()
                 .scale(120) // Smaller scale value = zoom out.
@@ -86,7 +86,7 @@
                     this.setAttribute("fill", "red");
                 })
                 .on("mouseout", function() {
-                    this.setAttribute("fill", "black"); 
+                    this.setAttribute("fill", "black");
                 })
                 // Clicking a country to perform zooming.
                 .on("click", function(d) {
@@ -94,9 +94,9 @@
 
                     var x, y, k;
 
-                    // If the country is clicked but not currently centered,
-                    // zoom in, and update the centered country (last clicked country).
-                    if (centered !== d) {   
+                    // If the state has been clicked but not centered,
+                    // zoom in, and update the centered state (last clicked state).
+                    if (centered !== d) {
                         var centroid = mapPath.centroid(d);
                         x = centroid[0];
                         y = centroid[1];
@@ -113,7 +113,7 @@
 
                     // Add "centered" class to the path element that represents the centered country.
                     countries.selectAll("path")
-                        /* 
+                        /*
                             classed method
                             p1: class name
                             p2: boolean
@@ -128,10 +128,10 @@
                             .classed("my-class") will return either true of false
                         */
                         .classed("centered", function(d) {
-                            return d === centered; 
+                            return d === centered;
                         });
-                    
-                    // Zooming in or out transition.  
+
+                    // Zooming in or out transition.
                     countries.transition()
                         .duration(700)
                         .attr("transform", "translate(" + width / 2 + ", " + height / 2 + ")scale(" + k + ")translate(" + -x + ", " + -y + ")")
@@ -147,14 +147,18 @@
                     .enter()
                         .append("circle")
                         .attr("cx", function(d) {
-                            return mapProjection([d.lon], [d.lat])[0];
+                            return mapProjection([d.lon, d.lat])[0];
                         })
                         .attr("cy", function(d) {
-                            // Not sure why projection returns NaN.
-                            return mapProjection([d.lon], [d.lat])[1];
+                            return mapProjection([d.lon, d.lat])[1];
                         })
+                        .attr('text', function(d) { return d.city; })
                         .attr("r", 5)
-                        .style("fill", "green");
+                        .style("fill", "green")
+                        // .enter()
+                        //     .append("text")
+                        //             .attr("dx", function(d){return -20})
+                        //             .text(function(d){return d.label})
             });
         }
 

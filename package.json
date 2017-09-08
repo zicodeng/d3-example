@@ -1,0 +1,24 @@
+{
+  "name": "zico-d3-example",
+  "version": "1.0.0",
+  "description": "This repo demonstrates how to use D3 library, version 4 specifically.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zicodeng/d3-example.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/zicodeng/d3-example/issues"
+  },
+  "homepage": "https://github.com/zicodeng/d3-example#readme",
+  "devDependencies": {
+    "express": "^4.15.4",
+    "nodemon": "^1.12.0"
+  }
+}
